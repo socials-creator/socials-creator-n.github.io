@@ -10,14 +10,7 @@
 :root{
 --canada-red:#EF3340;
 --india-blue:#06038D;
---neon:#00F5FF;
---purple:#6A00FF;
---green:#046A38;
---white:#FFFFFF;
 --orange:#FF671F;
---dark:#0f0f14;
---light:#000000;
---muted:#555555;
 --lightgrey:#EEEEEE;
 }
 
@@ -27,9 +20,9 @@ html{scroll-behavior:smooth;}
 body{
   font-family:'Inter',sans-serif;
   background:#111111;
-  color:var(--light);
+  color:#000;
   overflow-x:hidden;
-  transition: background 2s linear;
+  transition:background 2s linear;
 }
 
 section{
@@ -40,10 +33,11 @@ section{
   text-align:center;
   padding:0 20px;
   position:relative;
-  overflow:hidden;
-  transition:opacity 1s cubic-bezier(.16,1,.3,1), transform 1s cubic-bezier(.16,1,.3,1);
   opacity:0;
   transform:translateY(60px);
+  transition:
+    opacity 1s cubic-bezier(.16,1,.3,1),
+    transform 1s cubic-bezier(.16,1,.3,1);
 }
 
 section.active{
@@ -51,13 +45,17 @@ section.active{
   transform:translateY(0);
 }
 
-h1, p{
-  text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+body.modal-open section{
+  transform:scale(.92) translateY(0);
+  filter:brightness(.7);
+  transition:transform .6s cubic-bezier(.16,1,.3,1), filter .6s ease;
 }
 
-/* Downward arrow */
-.scroll-down {
-  position: absolute;
+h1,p{ text-shadow:0 2px 5px rgba(0,0,0,0.2); }
+
+/* Down Arrow */
+.scroll-down{
+  position:absolute;
   bottom:40px;
   left:50%;
   transform:translateX(-50%);
@@ -65,52 +63,81 @@ h1, p{
   color:var(--lightgrey);
   cursor:pointer;
   opacity:0;
-  transition: opacity 0.8s ease, color 0.8s ease;
-  animation: bounceScale 2s infinite;
+  transition:opacity .8s ease,color .8s ease;
+  animation:bounceScale 2s infinite;
 }
-
-.scroll-down.show{
-  opacity:1;
-}
+.scroll-down.show{opacity:1;}
 
 @keyframes bounceScale{
-  0%, 20%, 50%, 80%, 100%{ transform:translateX(-50%) translateY(0) scale(1); opacity:0.8; }
-  40%{ transform:translateX(-50%) translateY(-15px) scale(1.1); opacity:1; }
-  60%{ transform:translateX(-50%) translateY(-7px) scale(1.05); opacity:0.95; }
+  0%,20%,50%,80%,100%{transform:translateX(-50%) translateY(0) scale(1);opacity:.8;}
+  40%{transform:translateX(-50%) translateY(-15px) scale(1.1);opacity:1;}
+  60%{transform:translateX(-50%) translateY(-7px) scale(1.05);opacity:.95;}
 }
 
 /* HOME */
 .home h1{
   font-size:clamp(48px,8vw,120px);
   font-weight:800;
-}
-
-.nihar-text{
-  background:linear-gradient(-45deg,var(--green),var(--white),var(--orange));
-  background-size:400% 400%;
+  background:linear-gradient(90deg,var(--canada-red),var(--india-blue));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  animation:gradientShift 4s ease infinite;
+  animation:float 6s ease-in-out infinite;
 }
-
-.ca-text{
-  background:linear-gradient(45deg,var(--canada-red),var(--white),var(--canada-red));
-  background-size:400% 400%;
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:gradientShift 4s ease infinite;
-}
-
 .home p{
   font-size:clamp(12px,8vw,30px);
   margin-top:20px;
   letter-spacing:3px;
   color:var(--lightgrey);
-  transition: color 2s linear;
+  transition:color 2s linear;
 }
 
-/* CONTACT */
-.contact h1{
+@keyframes float{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-20px);}
+}
+
+/* ================= MODAL ================= */
+
+.contact-modal{
+  position:fixed;
+  left:0;
+  bottom:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(20px);
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+  transform:translateY(100%);
+  transition:transform .7s cubic-bezier(.16,1,.3,1);
+  z-index:999;
+}
+
+.contact-modal.active{
+  transform:translateY(0);
+}
+
+.modal-sheet{
+  background:#111;
+  width:100%;
+  max-width:900px;
+  border-radius:30px 30px 0 0;
+  padding:60px 40px 80px;
+  text-align:center;
+  position:relative;
+  touch-action:none;
+}
+
+.drag-handle{
+  width:60px;
+  height:6px;
+  background:#666;
+  border-radius:10px;
+  margin:0 auto 30px;
+}
+
+.modal-sheet h1{
   font-size:clamp(48px,8vw,110px);
   font-weight:800;
   background:linear-gradient(90deg,var(--canada-red),var(--india-blue));
@@ -119,63 +146,50 @@ h1, p{
   animation:float 6s ease-in-out infinite;
 }
 
-.contact p{
+/* FIXED DARK COLOR TEXT */
+.modal-fixed{
+  color:#EEEEEE !important;
   font-size:clamp(12px,8vw,30px);
-  color:var(--lightgrey);
-  transition: color 2s linear;
+  margin-top:20px;
 }
 
 .contact-card{
   font-size:clamp(12px,8vw,30px);
-  color:var(--lightgrey);
+  color:#EEEEEE !important;
   margin-top:40px;
-  max-width:600px;
   padding:50px;
   border-radius:25px;
-  background:rgba(0,0,0,0.03);
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(0,0,0,0.05);
-  transition: color 2s linear;
-}
-
-/* Animations */
-@keyframes float{
-  0%,100%{transform:translateY(0);}
-  50%{transform:translateY(-20px);}
-}
-
-@keyframes gradientShift{
-  0%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 50%;}
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
 }
 
 /* Mobile */
-@media (max-width: 768px) {
+@media (max-width:768px){
   .home p,
-  .contact p,
-  .contact-card {
-    font-size: clamp(10px, 6vw, 26px);
+  .modal-fixed,
+  .contact-card{
+    font-size:clamp(10px,6vw,26px);
   }
 }
 </style>
 </head>
 <body>
 
-<section class="home active" id="home">
+<section class="home active">
   <div>
-    <h1>
-      <span class="nihar-text">nihar.</span><span class="ca-text">ca</span>
-    </h1>
+    <h1>nihar.ca</h1>
     <p>Nihar Thummala</p>
-    <div class="scroll-down" data-target="contact">&#x2193;</div>
+    <div class="scroll-down">&#x2193;</div>
   </div>
 </section>
 
-<section class="contact" id="contact">
-  <div>
+<div class="contact-modal" id="contactModal">
+  <div class="modal-sheet" id="sheet">
+    <div class="drag-handle"></div>
     <h1>Contact</h1>
-    <p>Let’s build something exceptional</p>
+
+    <p class="modal-fixed">Let’s build something exceptional</p>
+
     <div class="contact-card">
       <p><strong>Address</strong><br>Toronto, ON, Canada</p>
       <br>
@@ -183,101 +197,72 @@ h1, p{
       <a href="mailto:contact@nihar.ca" style="color:var(--orange);text-decoration:none;">contact@nihar.ca</a></p>
     </div>
   </div>
-</section>
+</div>
 
 <script>
 const body=document.body;
-let current=0,target=0,ease=0.08;
+const modal=document.getElementById("contactModal");
+const sheet=document.getElementById("sheet");
+const openBtn=document.querySelector(".scroll-down");
 
-const wrapper=document.createElement("div");
-wrapper.style.position="fixed";
-wrapper.style.top=0;
-wrapper.style.left=0;
-wrapper.style.width="100%";
-wrapper.style.willChange="transform";
-while(body.firstChild){ wrapper.appendChild(body.firstChild);}
-body.appendChild(wrapper);
+openBtn.classList.add("show");
 
-function setBodyHeight(){ body.style.height=wrapper.getBoundingClientRect().height+"px";}
-setBodyHeight(); window.addEventListener("resize",setBodyHeight);
-
-function smoothScroll(){
-  target=window.scrollY;
-  current+=(target-current)*ease;
-  wrapper.style.transform=`translateY(-${current}px)`;
-  requestAnimationFrame(smoothScroll);
-}
-smoothScroll();
-
-const sections=document.querySelectorAll("section");
-const observer=new IntersectionObserver(entries=>{
-  entries.forEach(entry=>{
-    const arrow=entry.target.querySelector('.scroll-down');
-    if(entry.isIntersecting){
-      entry.target.classList.add("active");
-      if(arrow && entry.target.id!=="contact"){
-        setTimeout(()=>{arrow.classList.add('show');},400);
-      }
-    }else{
-      if(arrow) arrow.classList.remove('show');
-    }
-  });
-},{threshold:.4});
-sections.forEach(section=>observer.observe(section));
-
-window.addEventListener("scroll",()=>{
-  sections.forEach(section=>{
-    let rect=section.getBoundingClientRect();
-    section.style.transform=`translateY(${rect.top*0.05}px)`;
-  });
+openBtn.addEventListener("click",()=>{
+  modal.classList.add("active");
+  body.classList.add("modal-open");
 });
 
+function closeModal(){
+  modal.classList.remove("active");
+  body.classList.remove("modal-open");
+  sheet.style.transform="translateY(0)";
+}
+
+modal.addEventListener("click",(e)=>{
+  if(e.target===modal) closeModal();
+});
+
+/* Drag */
+let startY=0,currentY=0,isDragging=false;
+
+sheet.addEventListener("pointerdown",(e)=>{
+  isDragging=true;
+  startY=e.clientY;
+  sheet.style.transition="none";
+});
+
+window.addEventListener("pointermove",(e)=>{
+  if(!isDragging) return;
+  currentY=e.clientY-startY;
+  if(currentY>0){
+    sheet.style.transform=`translateY(${currentY}px)`;
+  }
+});
+
+window.addEventListener("pointerup",()=>{
+  if(!isDragging) return;
+  isDragging=false;
+  sheet.style.transition="transform .5s cubic-bezier(.16,1,.3,1)";
+  if(currentY>150){
+    closeModal();
+  }else{
+    sheet.style.transform="translateY(0)";
+  }
+});
+
+/* Day/Night Background */
 const dayColor=[215,229,240],nightColor=[17,17,34];
-const textElements=document.querySelectorAll('.home p, .contact p, .contact-card');
 const arrows=document.querySelectorAll('.scroll-down');
 
-function lerp(a,b,t){ return a+(b-a)*t;}
-
-function updateBackgroundAndText(){
-  const now=new Date(),hour=now.getHours()+now.getMinutes()/60;
-  let bg=[...nightColor],textColor='#EEEEEE',arrowColor='var(--lightgrey)';
-
-  if(hour>=7&&hour<=9){ 
-    let t=(hour-7)/2; 
-    bg=dayColor.map((c,i)=>lerp(nightColor[i],c,t)); 
-    textColor=`rgb(${Math.round(lerp(238,0,t))},${Math.round(lerp(238,0,t))},${Math.round(lerp(238,0,t))})`;
-    arrowColor='#06038D';
-  } 
-  else if(hour>=17&&hour<=18){ 
-    let t=hour-17; 
-    bg=nightColor.map((c,i)=>lerp(dayColor[i],c,t)); 
-    textColor=`rgb(${Math.round(lerp(0,238,t))},${Math.round(lerp(0,238,t))},${Math.round(lerp(0,238,t))})`;
-    arrowColor='#06038D';
-  } 
-  else if(hour>8&&hour<18){ 
-    bg=dayColor; textColor='#000000'; arrowColor='#06038D';
-  } 
-  else { 
-    bg=nightColor; textColor='#EEEEEE'; arrowColor='var(--lightgrey)';
-  }
-
-  body.style.background=`rgb(${Math.round(bg[0])},${Math.round(bg[1])},${Math.round(bg[2])})`;
-  textElements.forEach(el=>el.style.color=textColor);
+function updateBackground(){
+  const hour=new Date().getHours();
+  let bg=hour>8&&hour<18?dayColor:nightColor;
+  let arrowColor=hour>8&&hour<18?'#06038D':'#EEEEEE';
+  body.style.background=`rgb(${bg[0]},${bg[1]},${bg[2]})`;
   arrows.forEach(a=>a.style.color=arrowColor);
 }
-
-updateBackgroundAndText();
-setInterval(updateBackgroundAndText,60000);
-
-document.querySelectorAll('.scroll-down').forEach(arrow=>{
-  arrow.addEventListener('click',()=>{
-    const targetId=arrow.getAttribute('data-target');
-    const targetSection=document.getElementById(targetId);
-    if(targetSection){
-      window.scrollTo({top:targetSection.offsetTop, behavior:'smooth'});
-    }
-  });
-});
+updateBackground();
+setInterval(updateBackground,60000);
 </script>
 
 </body>

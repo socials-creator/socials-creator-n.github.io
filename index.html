@@ -87,7 +87,6 @@ h1,p{ text-shadow:0 2px 5px rgba(0,0,0,0.2); }
   font-size:clamp(12px,8vw,30px);
   margin-top:20px;
   letter-spacing:3px;
-  color:var(--lightgrey);
   transition:color 2s linear;
 }
 
@@ -146,7 +145,6 @@ h1,p{ text-shadow:0 2px 5px rgba(0,0,0,0.2); }
   animation:float 6s ease-in-out infinite;
 }
 
-/* FIXED DARK COLOR TEXT */
 .modal-fixed{
   color:#EEEEEE !important;
   font-size:clamp(12px,8vw,30px);
@@ -178,7 +176,7 @@ h1,p{ text-shadow:0 2px 5px rgba(0,0,0,0.2); }
 <section class="home active">
   <div>
     <h1>nihar.ca</h1>
-    <p>Nihar Thummala</p>
+    <p id="nrtText">N R T</p>
     <div class="scroll-down">&#x2193;</div>
   </div>
 </section>
@@ -204,6 +202,7 @@ const body=document.body;
 const modal=document.getElementById("contactModal");
 const sheet=document.getElementById("sheet");
 const openBtn=document.querySelector(".scroll-down");
+const nrt=document.getElementById("nrtText");
 
 openBtn.classList.add("show");
 
@@ -250,17 +249,25 @@ window.addEventListener("pointerup",()=>{
   }
 });
 
-/* Day/Night Background */
+/* Day/Night Background + NRT Color */
 const dayColor=[215,229,240],nightColor=[17,17,34];
 const arrows=document.querySelectorAll('.scroll-down');
 
 function updateBackground(){
   const hour=new Date().getHours();
-  let bg=hour>8&&hour<18?dayColor:nightColor;
-  let arrowColor=hour>8&&hour<18?'#06038D':'#EEEEEE';
+  const isDay=hour>8&&hour<18;
+
+  let bg=isDay?dayColor:nightColor;
   body.style.background=`rgb(${bg[0]},${bg[1]},${bg[2]})`;
-  arrows.forEach(a=>a.style.color=arrowColor);
+
+  arrows.forEach(a=>{
+    a.style.color=isDay?'#06038D':'#EEEEEE';
+  });
+
+  /* N R T color toggle */
+  nrt.style.color=isDay?'#111111':'#EEEEEE';
 }
+
 updateBackground();
 setInterval(updateBackground,60000);
 </script>

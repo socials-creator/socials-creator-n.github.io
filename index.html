@@ -2,275 +2,409 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>nihar.ca</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
 <style>
 :root{
 --canada-red:#EF3340;
 --india-blue:#06038D;
 --orange:#FF671F;
---lightgrey:#EEEEEE;
+--dark-bg:#0f0f12;
+--light-bg:#eef3f9;
+--blend:0;
+--grab-glow:0;
 }
 
+/* ===== Base ===== */
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-
 body{
-  font-family:'Inter',sans-serif;
-  background:#111111;
-  color:#000;
-  overflow-x:hidden;
-  transition:background 2s linear;
+font-family:'Inter',sans-serif;
+background:var(--dark-bg);
+color:#fff;
+overflow-x:hidden;
+transition:background 1s ease,color 1s ease;
 }
 
+/* ===== Animated Background ===== */
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at 20% 30%, rgba(255,103,31,.15), transparent 50%),
+radial-gradient(circle at 80% 70%, rgba(6,3,141,.15), transparent 50%);
+animation:gradientMove 18s ease-in-out infinite alternate;
+z-index:-3;
+}
+@keyframes gradientMove{
+0%{transform:translateY(0) scale(1);}
+100%{transform:translateY(-60px) scale(1.1);}
+}
+body::after{
+content:"";
+position:fixed;
+inset:0;
+background-image:url("https://grainy-gradients.vercel.app/noise.svg");
+opacity:.05;
+z-index:-2;
+}
+
+/* ===== Parallax Layer ===== */
+.parallax{
+position:fixed;
+inset:0;
+pointer-events:none;
+z-index:-1;
+background:radial-gradient(circle at 50% 50%, rgba(255,255,255,.04), transparent 60%);
+transition:transform .2s ease-out;
+}
+
+/* ===== Scroll Progress ===== */
+.progress{
+position:fixed;
+top:0;left:0;
+height:4px;
+background:linear-gradient(90deg,var(--canada-red),var(--india-blue));
+width:0%;
+z-index:5000;
+}
+
+/* ===== Hamburger ===== */
+.hamburger{
+position:fixed;
+top:25px;
+right:25px;
+width:30px;
+height:22px;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+cursor:pointer;
+z-index:6000;
+}
+.hamburger span{
+height:2px;
+background:var(--orange);
+transition:.4s ease;
+}
+.hamburger.active span:nth-child(1){
+transform:rotate(45deg) translate(6px,6px);
+}
+.hamburger.active span:nth-child(2){opacity:0;}
+.hamburger.active span:nth-child(3){
+transform:rotate(-45deg) translate(6px,-6px);
+}
+
+.nav-menu{
+position:fixed;
+top:0;
+right:-100%;
+width:260px;
+height:100%;
+background:#111; /* dark like dark mode */
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:40px;
+transition:.4s;
+z-index:5500;
+}
+.nav-menu.active{right:0;}
+.nav-menu a{
+color:#ccc;
+text-decoration:none;
+font-size:22px;
+}
+.nav-menu a:hover{color:var(--orange);}
+
+/* ===== Sections & Reveal ===== */
 section{
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  padding:0 20px;
-  position:relative;
-  opacity:0;
-  transform:translateY(60px);
-  transition:
-    opacity 1s cubic-bezier(.16,1,.3,1),
-    transform 1s cubic-bezier(.16,1,.3,1);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
+padding:0 20px;
+opacity:0;
+transform:translateY(80px);
+transition:opacity 1.2s cubic-bezier(.16,1,.3,1),
+            transform 1.2s cubic-bezier(.16,1,.3,1);
+}
+section.visible{
+opacity:1;
+transform:translateY(0);
 }
 
-section.active{
-  opacity:1;
-  transform:translateY(0);
+/* ===== Titles ===== */
+h1{
+animation:titleFloat 7s ease-in-out infinite;
+}
+@keyframes titleFloat{
+0%,100%{transform:translateY(0);}
+50%{transform:translateY(-14px);}
 }
 
-body.modal-open section{
-  transform:scale(.92) translateY(0);
-  filter:brightness(.7);
-  transition:transform .6s cubic-bezier(.16,1,.3,1), filter .6s ease;
-}
-
-h1,p{ text-shadow:0 2px 5px rgba(0,0,0,0.2); }
-
-/* Down Arrow */
-.scroll-down{
-  position:absolute;
-  bottom:40px;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:2rem;
-  color:var(--lightgrey);
-  cursor:pointer;
-  opacity:0;
-  transition:opacity .8s ease,color .8s ease;
-  animation:bounceScale 2s infinite;
-}
-.scroll-down.show{opacity:1;}
-
-@keyframes bounceScale{
-  0%,20%,50%,80%,100%{transform:translateX(-50%) translateY(0) scale(1);opacity:.8;}
-  40%{transform:translateX(-50%) translateY(-15px) scale(1.1);opacity:1;}
-  60%{transform:translateX(-50%) translateY(-7px) scale(1.05);opacity:.95;}
-}
-
-/* HOME */
+/* ===== Home ===== */
 .home h1{
-  font-size:clamp(48px,8vw,120px);
-  font-weight:800;
-  background:linear-gradient(90deg,var(--canada-red),var(--india-blue));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:float 6s ease-in-out infinite;
-}
-.home p{
-  font-size:clamp(12px,8vw,30px);
-  margin-top:20px;
-  letter-spacing:3px;
-  transition:color 2s linear;
+font-size:clamp(50px,9vw,120px);
+font-weight:800;
+background:linear-gradient(calc(90deg + var(--blend)*1deg),
+var(--canada-red),
+var(--india-blue));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
 }
 
-@keyframes float{
-  0%,100%{transform:translateY(0);}
-  50%{transform:translateY(-20px);}
+.subtitle{
+margin-top:30px;
+font-size:clamp(18px,3vw,32px);
+letter-spacing:5px;
+line-height:2.2;
+min-height:140px;
 }
 
-/* ================= MODAL ================= */
-
-.contact-modal{
-  position:fixed;
-  left:0;
-  bottom:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,.6);
-  backdrop-filter:blur(20px);
-  display:flex;
-  justify-content:center;
-  align-items:flex-end;
-  transform:translateY(100%);
-  transition:transform .7s cubic-bezier(.16,1,.3,1);
-  z-index:999;
+/* ===== Sheet ===== */
+.sheet{
+background:rgba(20,20,28,.85); /* always dark */
+backdrop-filter:blur(50px) saturate(130%);
+border-radius:40px 40px 0 0;
+margin-top:-80px;
+padding-top:110px;
+padding-bottom:80px;
+position:relative;
+transition:transform .3s cubic-bezier(.16,1,.3,1);
 }
 
-.contact-modal.active{
-  transform:translateY(0);
+/* ===== iOS Grab Bar ===== */
+.grab-bar{
+position:absolute;
+top:18px;
+left:50%;
+transform:translateX(-50%) scaleX(1);
+width:70px;
+height:6px;
+border-radius:10px;
+background:rgba(255,255,255,0.4);
+transition:transform .25s cubic-bezier(.16,1,.3,1),
+box-shadow .25s ease,
+background .25s ease;
+box-shadow:0 0 calc(10px * var(--grab-glow)) rgba(255,255,255,0.6);
+animation:grabPulse 2s ease-in-out infinite;
+}
+@keyframes grabPulse{
+0%,100%{opacity:0.85; transform:translateX(-50%) scaleX(1);}
+50%{opacity:1; transform:translateX(-50%) scaleX(1.05);}
+}
+.grab-bar:hover{
+transform:translateX(-50%) scaleX(1.1);
+box-shadow:0 0 18px rgba(255,255,255,0.8);
+background:rgba(255,255,255,0.7);
 }
 
-.modal-sheet{
-  background:#111;
-  width:100%;
-  max-width:900px;
-  border-radius:30px 30px 0 0;
-  padding:60px 40px 80px;
-  text-align:center;
-  position:relative;
-  touch-action:none;
+/* ===== Portfolio ===== */
+.portfolio-container{
+max-width:1000px;
+margin:auto;
+padding:60px 25px;
+background:transparent;
+color:#fff;
+}
+.portfolio h1,
+.contact h1{
+font-size:clamp(42px,8vw,100px);
+margin-bottom:40px;
+background:linear-gradient(90deg,var(--canada-red),var(--india-blue));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+.portfolio p{
+font-size:20px;
+line-height:2.4;
+margin-bottom:60px;
+text-align:justify;
+color:#ddd;
+}
+body.light .portfolio p{color:#ddd;} /* keep same dark content in light mode */
+
+.portfolio ul{
+font-size:18px;
+line-height:2.2;
+margin-bottom:70px;
+text-align:justify;
+}
+.portfolio li{margin-bottom:24px;}
+
+/* ===== Social Icons ===== */
+.social-icons{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:60px 120px;
+justify-items:center;
+margin-top:40px;
+}
+.social-icons a{
+font-size:70px;
+color:#aaa;
+transition:.3s;
+}
+.social-icons a:hover{
+color:var(--orange);
+transform:translateY(-10px) scale(1.2);
 }
 
-.drag-handle{
-  width:60px;
-  height:6px;
-  background:#666;
-  border-radius:10px;
-  margin:0 auto 30px;
-}
-
-.modal-sheet h1{
-  font-size:clamp(48px,8vw,110px);
-  font-weight:800;
-  background:linear-gradient(90deg,var(--canada-red),var(--india-blue));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:float 6s ease-in-out infinite;
-}
-
-.modal-fixed{
-  color:#EEEEEE !important;
-  font-size:clamp(12px,8vw,30px);
-  margin-top:20px;
-}
-
+/* ===== Contact ===== */
 .contact-card{
-  font-size:clamp(12px,8vw,30px);
-  color:#EEEEEE !important;
-  margin-top:40px;
-  padding:50px;
-  border-radius:25px;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.08);
+margin-top:60px;
+padding:100px 40px;
+border-radius:40px;
+font-size:22px;
+line-height:2.4;
+background:transparent;
+color:#fff;
+}
+.contact-card h3{margin-top:30px; color:var(--orange);}
+body.light .contact-card h3{color:var(--orange);} /* keep dark style */
+body.light .contact-card p{color:#ddd;} /* keep dark style */
+
+/* ===== Mobile ===== */
+@media(max-width:768px){
+.subtitle{line-height:2.6;}
+.portfolio p{font-size:18px;}
+.portfolio ul{font-size:16px;}
+.social-icons{gap:50px;}
 }
 
-/* Mobile */
-@media (max-width:768px){
-  .home p,
-  .modal-fixed,
-  .contact-card{
-    font-size:clamp(10px,6vw,26px);
-  }
+/* ===== Light Mode ===== */
+body.light{
+background:var(--light-bg);
+color:#111;
 }
+body.light .nav-menu{background:#111;} /* dark panel */
+body.light .nav-menu a{color:#ccc;}
 </style>
 </head>
 <body>
 
-<section class="home active">
-  <div>
-    <h1>nihar.ca</h1>
-    <p id="nrtText">Nihar Thummala</p>
-    <div class="scroll-down">&#x2193;</div>
-  </div>
+<div class="progress" id="progress"></div>
+<div class="parallax" id="parallax"></div>
+
+<div class="hamburger" id="hamburger">
+<span></span><span></span><span></span>
+</div>
+
+<div class="nav-menu" id="navMenu">
+<a href="#home">Home</a>
+<a href="#portfolio">Portfolio</a>
+<a href="#contact">Contact</a>
+</div>
+
+<section class="home" id="home">
+<div>
+<h1>nihar.ca</h1>
+<div class="subtitle">
+<div id="line1"></div>
+<div id="line2"></div>
+<div id="line3"></div>
+</div>
+</div>
 </section>
 
-<div class="contact-modal" id="contactModal">
-  <div class="modal-sheet" id="sheet">
-    <div class="drag-handle"></div>
-    <h1>Contact Me</h1>
+<div class="sheet" id="sheet">
+<div class="grab-bar" id="grabBar"></div>
 
-    <p class="modal-fixed">Let’s build something exceptional!</p>
+<section class="portfolio" id="portfolio">
+<div class="portfolio-container">
+<h1>My portfolio in short…</h1>
+<p>
+I bring 5+ years of advanced DevOps and Cloud Engineering expertise, building scalable,
+secure and high-performance infrastructure across multi-cloud environments.
+</p>
+<ul>
+<li>Architected multi-region production systems across AWS, Azure & GCP using Terraform, Pulumi & ARM — implementing zero-downtime deployments and immutable infrastructure.</li>
+<li>Built enterprise CI/CD pipelines with GitHub Actions, GitLab CI, Jenkins & ArgoCD enabling trunk-based development and progressive delivery strategies.</li>
+<li>Engineered Kubernetes platforms (EKS, AKS, GKE) with Helm, Istio, autoscaling, service mesh & observability stacks.</li>
+<li>Designed secure cloud-native architectures leveraging IAM, OPA, Vault, WAF, Zero Trust, container security & policy-as-code.</li>
+<li>Implemented advanced monitoring, cost-optimization & reliability practices (SRE, SLIs/SLOs, chaos testing, FinOps automation).</li>
+</ul>
 
-    <div class="contact-card">
-      <p><strong>Address</strong><br>Toronto, ON, Canada</p>
-      <br>
-      <p><strong>Email</strong><br>
-      <a href="mailto:contact@nihar.ca" style="color:var(--orange);text-decoration:none;">contact@nihar.ca</a></p>
-    </div>
-  </div>
+<div class="social-icons">
+<a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+<a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+<a href="https://x.com" target="_blank"><i class="fab fa-x-twitter"></i></a>
+<a href="mailto:contact@nihar.ca"><i class="fas fa-envelope"></i></a>
+</div>
+</div>
+</section>
+
+<section class="contact" id="contact">
+<div>
+<h1>Contact Me</h1>
+<div class="contact-card">
+<h3>Address</h3>
+<p>Toronto, ON, Canada</p>
+<h3>Email</h3>
+<p><a href="mailto:contact@nihar.ca" style="color:var(--orange);text-decoration:none;">contact@nihar.ca</a></p>
+</div>
+</div>
+</section>
 </div>
 
 <script>
-const body=document.body;
-const modal=document.getElementById("contactModal");
-const sheet=document.getElementById("sheet");
-const openBtn=document.querySelector(".scroll-down");
-const nrt=document.getElementById("nrtText");
+/* ===== Hamburger ===== */
+const hamburger=document.getElementById("hamburger");
+const navMenu=document.getElementById("navMenu");
+hamburger.onclick=()=>{hamburger.classList.toggle("active"); navMenu.classList.toggle("active");};
+document.querySelectorAll(".nav-menu a").forEach(link=>link.onclick=()=>{hamburger.classList.remove("active"); navMenu.classList.remove("active");});
 
-openBtn.classList.add("show");
+/* ===== Scroll Progress ===== */
+window.addEventListener("scroll",()=>{let scrollTop=document.documentElement.scrollTop; let scrollHeight=document.documentElement.scrollHeight-document.documentElement.clientHeight; document.getElementById("progress").style.width=(scrollTop/scrollHeight)*100+"%";});
 
-openBtn.addEventListener("click",()=>{
-  modal.classList.add("active");
-  body.classList.add("modal-open");
+/* ===== Reveal Sections ===== */
+const sections=document.querySelectorAll("section");
+const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("visible");}})},{threshold:0.2});
+sections.forEach(sec=>observer.observe(sec));
+
+/* ===== Typing Animation ===== */
+function typeLine(text,id,speed){let i=0; function typing(){if(i<text.length){document.getElementById(id).textContent+=text[i]; i++; setTimeout(typing,1000/speed);}} typing();}
+typeLine("SOFTWARE","line1",6);
+typeLine("ENGINEERING","line2",6);
+typeLine("CONSULTANT","line3",6);
+
+/* ===== Grab Bar Drag + Haptic + Spring ===== */
+const grabBar=document.getElementById("grabBar");
+let isDragging=false,startY=0;
+grabBar.addEventListener("pointerdown",(e)=>{isDragging=true; startY=e.clientY; grabBar.style.transition="none";});
+document.addEventListener("pointermove",(e)=>{if(!isDragging) return; let delta=e.clientY-startY; let stretch=Math.min(Math.max(delta/150,0),0.5); grabBar.style.transform=`translateX(-50%) scaleX(${1+stretch})`; document.documentElement.style.setProperty('--grab-glow',stretch*2);});
+document.addEventListener("pointerup",()=>{
+if(!isDragging) return;
+isDragging=false;
+grabBar.style.transition="transform .5s cubic-bezier(.34,1.56,.64,1), box-shadow .5s ease";
+grabBar.style.transform="translateX(-50%) scaleX(1)";
+document.documentElement.style.setProperty('--grab-glow',0);
 });
 
-function closeModal(){
-  modal.classList.remove("active");
-  body.classList.remove("modal-open");
-  sheet.style.transform="translateY(0)";
-}
-
-modal.addEventListener("click",(e)=>{
-  if(e.target===modal) closeModal();
+/* ===== Cursor Blend + Parallax ===== */
+let lastX=0,lastY=0,lastTime=Date.now();
+document.addEventListener("mousemove",e=>{
+let now=Date.now();
+let dx=e.clientX-lastX;
+let dy=e.clientY-lastY;
+let dt=now-lastTime;
+let velocity=Math.sqrt(dx*dx+dy*dy)/(dt||1);
+document.documentElement.style.setProperty('--blend',Math.min(velocity*200,40));
+lastX=e.clientX; lastY=e.clientY; lastTime=now;
+document.getElementById("parallax").style.transform=`translate(${dx*0.5}px,${dy*0.5}px)`;
 });
 
-/* Drag */
-let startY=0,currentY=0,isDragging=false;
-
-sheet.addEventListener("pointerdown",(e)=>{
-  isDragging=true;
-  startY=e.clientY;
-  sheet.style.transition="none";
-});
-
-window.addEventListener("pointermove",(e)=>{
-  if(!isDragging) return;
-  currentY=e.clientY-startY;
-  if(currentY>0){
-    sheet.style.transform=`translateY(${currentY}px)`;
-  }
-});
-
-window.addEventListener("pointerup",()=>{
-  if(!isDragging) return;
-  isDragging=false;
-  sheet.style.transition="transform .5s cubic-bezier(.16,1,.3,1)";
-  if(currentY>150){
-    closeModal();
-  }else{
-    sheet.style.transform="translateY(0)";
-  }
-});
-
-/* Day/Night Background + NRT Color */
-const dayColor=[215,229,240],nightColor=[17,17,34];
-const arrows=document.querySelectorAll('.scroll-down');
-
-function updateBackground(){
-  const hour=new Date().getHours();
-  const isDay=hour>8&&hour<18;
-
-  let bg=isDay?dayColor:nightColor;
-  body.style.background=`rgb(${bg[0]},${bg[1]},${bg[2]})`;
-
-  arrows.forEach(a=>{
-    a.style.color=isDay?'#06038D':'#EEEEEE';
-  });
-
-  /* NRT color toggle */
-  nrt.style.color=isDay?'#111111':'#EEEEEE';
-}
-
-updateBackground();
-setInterval(updateBackground,60000);
+/* ===== Auto Day/Night Mode ===== */
+function updateMode(){const hour=new Date().getHours(); const isDay=hour>8&&hour<18; document.body.classList.toggle("light",isDay);}
+updateMode(); setInterval(updateMode,60000);
 </script>
-
 </body>
 </html>

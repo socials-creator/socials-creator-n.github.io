@@ -19,15 +19,33 @@
 --grab-glow:0;
 }
 
-/* ===== Base ===== */
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
+
 body{
 font-family:'Inter',sans-serif;
 background:var(--dark-bg);
 color:#fff;
 overflow-x:hidden;
-transition:background 1s ease,color 1s ease;
+transition:background 1.2s cubic-bezier(.16,1,.3,1),
+           color 1.2s cubic-bezier(.16,1,.3,1);
+}
+
+/* ===== Light Mode ===== */
+body.light{
+background:var(--light-bg);
+color:#111;
+}
+
+/* Requested light overrides */
+body.light .portfolio p,
+body.light .portfolio ul,
+body.light .portfolio li{
+color:#ffffff;
+}
+
+body.light .contact-card p:first-of-type{
+color:#ffffff;
 }
 
 /* ===== Animated Background ===== */
@@ -38,8 +56,9 @@ inset:0;
 background:
 radial-gradient(circle at 20% 30%, rgba(255,103,31,.15), transparent 50%),
 radial-gradient(circle at 80% 70%, rgba(6,3,141,.15), transparent 50%);
-animation:gradientMove 18s ease-in-out infinite alternate;
+animation:gradientMove 20s ease-in-out infinite alternate;
 z-index:-3;
+pointer-events:none;
 }
 @keyframes gradientMove{
 0%{transform:translateY(0) scale(1);}
@@ -52,16 +71,7 @@ inset:0;
 background-image:url("https://grainy-gradients.vercel.app/noise.svg");
 opacity:.05;
 z-index:-2;
-}
-
-/* ===== Parallax Layer ===== */
-.parallax{
-position:fixed;
-inset:0;
 pointer-events:none;
-z-index:-1;
-background:radial-gradient(circle at 50% 50%, rgba(255,255,255,.04), transparent 60%);
-transition:transform .2s ease-out;
 }
 
 /* ===== Scroll Progress ===== */
@@ -85,7 +95,7 @@ display:flex;
 flex-direction:column;
 justify-content:space-between;
 cursor:pointer;
-z-index:6000;
+z-index:7000; /* FIXED */
 }
 .hamburger span{
 height:2px;
@@ -100,30 +110,103 @@ transform:rotate(45deg) translate(6px,6px);
 transform:rotate(-45deg) translate(6px,-6px);
 }
 
+/* ===== Side Panel ===== */
 .nav-menu{
 position:fixed;
 top:0;
 right:-100%;
 width:260px;
 height:100%;
-background:#111; /* dark like dark mode */
+background:#111;
 display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
 gap:40px;
-transition:.4s;
-z-index:5500;
+transition:.5s cubic-bezier(.16,1,.3,1);
+z-index:6500;
 }
 .nav-menu.active{right:0;}
+
 .nav-menu a{
 color:#ccc;
 text-decoration:none;
 font-size:22px;
+transition:.3s;
 }
-.nav-menu a:hover{color:var(--orange);}
+.nav-menu a:hover{
+color:var(--orange);
+transform:translateX(4px);
+}
 
-/* ===== Sections & Reveal ===== */
+/* ===== Theme Toggle ===== */
+.theme-container{
+position:absolute;
+top:20px;
+left:20px;
+display:flex;
+flex-direction:column;
+align-items:flex-start;
+gap:6px;
+}
+
+.theme-label{
+font-size:12px;
+letter-spacing:2px;
+color:#aaa;
+transition:.3s ease;
+}
+
+.theme-toggle{
+width:54px;
+height:26px;
+border-radius:50px;
+background:#333;
+cursor:pointer;
+display:flex;
+align-items:center;
+padding:4px;
+transition:.4s cubic-bezier(.16,1,.3,1);
+position:relative;
+}
+
+.theme-toggle .icon{
+width:18px;
+height:18px;
+border-radius:50%;
+background:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:12px;
+position:absolute;
+left:4px;
+transition:all .5s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* Light */
+body.light .theme-toggle{
+background:#ddd;
+}
+body.light .theme-toggle .icon{
+left:32px;
+background:var(--orange);
+color:#fff;
+transform:rotate(360deg) scale(1.05);
+}
+
+/* Auto */
+body.auto .theme-toggle{
+background:linear-gradient(90deg,#333,#ddd);
+}
+body.auto .theme-toggle .icon{
+left:18px;
+background:var(--india-blue);
+color:#fff;
+transform:rotate(180deg);
+}
+
+/* ===== Sections ===== */
 section{
 min-height:100vh;
 display:flex;
@@ -141,7 +224,39 @@ opacity:1;
 transform:translateY(0);
 }
 
-/* ===== Titles ===== */
+/* ===== iOS Sheet ===== */
+.sheet{
+background:rgba(20,20,28,.85);
+backdrop-filter:blur(50px) saturate(130%);
+border-radius:40px 40px 0 0;
+margin-top:-80px;
+padding-top:110px;
+padding-bottom:80px;
+position:relative;
+}
+
+/* Grab Bar */
+.grab-bar{
+position:absolute;
+top:18px;
+left:50%;
+transform:translateX(-50%) scaleX(1);
+width:70px;
+height:6px;
+border-radius:10px;
+background:rgba(255,255,255,0.4);
+transition:transform .25s cubic-bezier(.16,1,.3,1),
+box-shadow .25s ease;
+box-shadow:0 0 calc(10px * var(--grab-glow)) rgba(255,255,255,0.6);
+animation:grabPulse 2s ease-in-out infinite;
+cursor:grab;
+}
+@keyframes grabPulse{
+0%,100%{opacity:0.85; transform:translateX(-50%) scaleX(1);}
+50%{opacity:1; transform:translateX(-50%) scaleX(1.05);}
+}
+
+/* ===== Typography ===== */
 h1{
 animation:titleFloat 7s ease-in-out infinite;
 }
@@ -150,13 +265,10 @@ animation:titleFloat 7s ease-in-out infinite;
 50%{transform:translateY(-14px);}
 }
 
-/* ===== Home ===== */
 .home h1{
 font-size:clamp(50px,9vw,120px);
 font-weight:800;
-background:linear-gradient(calc(90deg + var(--blend)*1deg),
-var(--canada-red),
-var(--india-blue));
+background:linear-gradient(90deg,var(--canada-red),var(--india-blue));
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
 }
@@ -169,51 +281,11 @@ line-height:2.2;
 min-height:140px;
 }
 
-/* ===== Sheet ===== */
-.sheet{
-background:rgba(20,20,28,.85); /* always dark */
-backdrop-filter:blur(50px) saturate(130%);
-border-radius:40px 40px 0 0;
-margin-top:-80px;
-padding-top:110px;
-padding-bottom:80px;
-position:relative;
-transition:transform .3s cubic-bezier(.16,1,.3,1);
-}
-
-/* ===== iOS Grab Bar ===== */
-.grab-bar{
-position:absolute;
-top:18px;
-left:50%;
-transform:translateX(-50%) scaleX(1);
-width:70px;
-height:6px;
-border-radius:10px;
-background:rgba(255,255,255,0.4);
-transition:transform .25s cubic-bezier(.16,1,.3,1),
-box-shadow .25s ease,
-background .25s ease;
-box-shadow:0 0 calc(10px * var(--grab-glow)) rgba(255,255,255,0.6);
-animation:grabPulse 2s ease-in-out infinite;
-}
-@keyframes grabPulse{
-0%,100%{opacity:0.85; transform:translateX(-50%) scaleX(1);}
-50%{opacity:1; transform:translateX(-50%) scaleX(1.05);}
-}
-.grab-bar:hover{
-transform:translateX(-50%) scaleX(1.1);
-box-shadow:0 0 18px rgba(255,255,255,0.8);
-background:rgba(255,255,255,0.7);
-}
-
 /* ===== Portfolio ===== */
 .portfolio-container{
 max-width:1000px;
 margin:auto;
 padding:60px 25px;
-background:transparent;
-color:#fff;
 }
 .portfolio h1,
 .contact h1{
@@ -230,8 +302,6 @@ margin-bottom:60px;
 text-align:justify;
 color:#ddd;
 }
-body.light .portfolio p{color:#ddd;} /* keep same dark content in light mode */
-
 .portfolio ul{
 font-size:18px;
 line-height:2.2;
@@ -240,7 +310,6 @@ text-align:justify;
 }
 .portfolio li{margin-bottom:24px;}
 
-/* ===== Social Icons ===== */
 .social-icons{
 display:grid;
 grid-template-columns:repeat(2,1fr);
@@ -251,74 +320,59 @@ margin-top:40px;
 .social-icons a{
 font-size:70px;
 color:#aaa;
-transition:.3s;
+transition:.4s cubic-bezier(.16,1,.3,1);
 }
 .social-icons a:hover{
 color:var(--orange);
-transform:translateY(-10px) scale(1.2);
+transform:translateY(-12px) scale(1.2);
 }
 
-/* ===== Contact ===== */
 .contact-card{
 margin-top:60px;
 padding:100px 40px;
 border-radius:40px;
 font-size:22px;
 line-height:2.4;
-background:transparent;
-color:#fff;
 }
-.contact-card h3{margin-top:30px; color:var(--orange);}
-body.light .contact-card h3{color:var(--orange);} /* keep dark style */
-body.light .contact-card p{color:#ddd;} /* keep dark style */
-
-/* ===== Mobile ===== */
-@media(max-width:768px){
-.subtitle{line-height:2.6;}
-.portfolio p{font-size:18px;}
-.portfolio ul{font-size:16px;}
-.social-icons{gap:50px;}
-}
-
-/* ===== Light Mode ===== */
-body.light{
-background:var(--light-bg);
-color:#111;
-}
-body.light .nav-menu{background:#111;} /* dark panel */
-body.light .nav-menu a{color:#ccc;}
+.contact-card h3{margin-top:30px;color:var(--orange);}
 </style>
 </head>
 <body>
 
 <div class="progress" id="progress"></div>
-<div class="parallax" id="parallax"></div>
 
 <div class="hamburger" id="hamburger">
 <span></span><span></span><span></span>
 </div>
 
 <div class="nav-menu" id="navMenu">
+<div class="theme-container">
+<div class="theme-label" id="themeLabel">AUTO</div>
+<div class="theme-toggle" id="themeToggle">
+<div class="icon" id="themeIcon"><i class="fas fa-adjust"></i></div>
+</div>
+</div>
+
 <a href="#home">Home</a>
 <a href="#portfolio">Portfolio</a>
 <a href="#contact">Contact</a>
 </div>
 
-<section class="home" id="home">
+<section class="home visible" id="home">
 <div>
 <h1>nihar.ca</h1>
 <div class="subtitle">
-<div id="line1"></div>
-<div id="line2"></div>
-<div id="line3"></div>
+<div>SOFTWARE</div>
+<div>ENGINEERING</div>
+<div>CONSULTANT</div>
 </div>
 </div>
 </section>
 
-<div class="sheet" id="sheet">
+<div class="sheet">
 <div class="grab-bar" id="grabBar"></div>
 
-<section class="portfolio" id="portfolio">
+<section class="portfolio visible" id="portfolio">
 <div class="portfolio-container">
 <h1>My portfolio in short…</h1>
 <p>
@@ -334,15 +388,15 @@ secure and high-performance infrastructure across multi-cloud environments.
 </ul>
 
 <div class="social-icons">
-<a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-<a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
-<a href="https://x.com" target="_blank"><i class="fab fa-x-twitter"></i></a>
-<a href="mailto:contact@nihar.ca"><i class="fas fa-envelope"></i></a>
+<a href="#"><i class="fab fa-linkedin-in"></i></a>
+<a href="#"><i class="fab fa-github"></i></a>
+<a href="#"><i class="fab fa-x-twitter"></i></a>
+<a href="#"><i class="fas fa-envelope"></i></a>
 </div>
 </div>
 </section>
 
-<section class="contact" id="contact">
+<section class="contact visible" id="contact">
 <div>
 <h1>Contact Me</h1>
 <div class="contact-card">
@@ -356,55 +410,92 @@ secure and high-performance infrastructure across multi-cloud environments.
 </div>
 
 <script>
-/* ===== Hamburger ===== */
+/* Hamburger */
 const hamburger=document.getElementById("hamburger");
 const navMenu=document.getElementById("navMenu");
-hamburger.onclick=()=>{hamburger.classList.toggle("active"); navMenu.classList.toggle("active");};
-document.querySelectorAll(".nav-menu a").forEach(link=>link.onclick=()=>{hamburger.classList.remove("active"); navMenu.classList.remove("active");});
+hamburger.onclick=()=>{
+hamburger.classList.toggle("active");
+navMenu.classList.toggle("active");
+};
+document.querySelectorAll(".nav-menu a").forEach(link=>{
+link.onclick=()=>{
+hamburger.classList.remove("active");
+navMenu.classList.remove("active");
+};
+});
 
-/* ===== Scroll Progress ===== */
-window.addEventListener("scroll",()=>{let scrollTop=document.documentElement.scrollTop; let scrollHeight=document.documentElement.scrollHeight-document.documentElement.clientHeight; document.getElementById("progress").style.width=(scrollTop/scrollHeight)*100+"%";});
+/* Scroll progress */
+window.addEventListener("scroll",()=>{
+let scrollTop=document.documentElement.scrollTop;
+let scrollHeight=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+document.getElementById("progress").style.width=(scrollTop/scrollHeight)*100+"%";
+});
 
-/* ===== Reveal Sections ===== */
-const sections=document.querySelectorAll("section");
-const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("visible");}})},{threshold:0.2});
-sections.forEach(sec=>observer.observe(sec));
-
-/* ===== Typing Animation ===== */
-function typeLine(text,id,speed){let i=0; function typing(){if(i<text.length){document.getElementById(id).textContent+=text[i]; i++; setTimeout(typing,1000/speed);}} typing();}
-typeLine("SOFTWARE","line1",6);
-typeLine("ENGINEERING","line2",6);
-typeLine("CONSULTANT","line3",6);
-
-/* ===== Grab Bar Drag + Haptic + Spring ===== */
+/* Grab Bar Interaction */
 const grabBar=document.getElementById("grabBar");
-let isDragging=false,startY=0;
-grabBar.addEventListener("pointerdown",(e)=>{isDragging=true; startY=e.clientY; grabBar.style.transition="none";});
-document.addEventListener("pointermove",(e)=>{if(!isDragging) return; let delta=e.clientY-startY; let stretch=Math.min(Math.max(delta/150,0),0.5); grabBar.style.transform=`translateX(-50%) scaleX(${1+stretch})`; document.documentElement.style.setProperty('--grab-glow',stretch*2);});
+let isDragging=false,startX=0;
+
+grabBar.addEventListener("pointerdown",(e)=>{
+isDragging=true;
+startX=e.clientX;
+grabBar.style.transition="none";
+grabBar.style.cursor="grabbing";
+});
+
+document.addEventListener("pointermove",(e)=>{
+if(!isDragging) return;
+let delta=e.clientX-startX;
+let stretch=Math.min(Math.max(delta/150,-0.5),0.5);
+grabBar.style.transform=`translateX(-50%) scaleX(${1+stretch})`;
+document.documentElement.style.setProperty('--grab-glow',Math.abs(stretch)*2);
+});
+
 document.addEventListener("pointerup",()=>{
 if(!isDragging) return;
 isDragging=false;
-grabBar.style.transition="transform .5s cubic-bezier(.34,1.56,.64,1), box-shadow .5s ease";
+grabBar.style.transition="transform .5s cubic-bezier(.34,1.56,.64,1)";
 grabBar.style.transform="translateX(-50%) scaleX(1)";
+grabBar.style.cursor="grab";
 document.documentElement.style.setProperty('--grab-glow',0);
 });
 
-/* ===== Cursor Blend + Parallax ===== */
-let lastX=0,lastY=0,lastTime=Date.now();
-document.addEventListener("mousemove",e=>{
-let now=Date.now();
-let dx=e.clientX-lastX;
-let dy=e.clientY-lastY;
-let dt=now-lastTime;
-let velocity=Math.sqrt(dx*dx+dy*dy)/(dt||1);
-document.documentElement.style.setProperty('--blend',Math.min(velocity*200,40));
-lastX=e.clientX; lastY=e.clientY; lastTime=now;
-document.getElementById("parallax").style.transform=`translate(${dx*0.5}px,${dy*0.5}px)`;
-});
+/* Theme Toggle */
+const toggle=document.getElementById("themeToggle");
+const icon=document.getElementById("themeIcon");
+const label=document.getElementById("themeLabel");
 
-/* ===== Auto Day/Night Mode ===== */
-function updateMode(){const hour=new Date().getHours(); const isDay=hour>8&&hour<18; document.body.classList.toggle("light",isDay);}
-updateMode(); setInterval(updateMode,60000);
+function setLabel(mode){ label.textContent=mode.toUpperCase(); }
+
+function applyTheme(mode){
+document.body.classList.remove("light","auto");
+if(mode==="light"){
+document.body.classList.add("light");
+icon.innerHTML='<i class="fas fa-sun"></i>';
+}
+else if(mode==="dark"){
+icon.innerHTML='<i class="fas fa-moon"></i>';
+}
+else{
+document.body.classList.add("auto");
+icon.innerHTML='<i class="fas fa-adjust"></i>';
+}
+setLabel(mode);
+localStorage.setItem("themeMode",mode);
+}
+
+function initTheme(){
+const saved=localStorage.getItem("themeMode") || "auto";
+applyTheme(saved);
+}
+initTheme();
+
+toggle.addEventListener("click",()=>{
+let current=localStorage.getItem("themeMode") || "auto";
+if(current==="dark") applyTheme("light");
+else if(current==="light") applyTheme("auto");
+else applyTheme("dark");
+});
 </script>
+
 </body>
 </html>
